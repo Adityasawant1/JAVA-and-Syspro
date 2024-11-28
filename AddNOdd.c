@@ -1,0 +1,78 @@
+#include <stdio.h>
+
+int main() {
+    FILE *fp;
+    int mem[1000], opcode, reg, opnd, pc = 0, flag;
+    int reg1[4];
+    fp = fopen("addN.txt", "r");
+
+    if (fp == NULL) {
+        printf("File not found\n");
+        return 1;
+    } 
+
+    while (fscanf(fp, "%d", &mem[pc]) != EOF) {
+        pc++;
+    }
+    pc = 0;
+    mem[104] = 1;
+    mem[105] = 0;
+    while (1) {
+        opcode = mem[pc] / 10000;
+        reg = (mem[pc] % 10000) / 1000;
+        opnd = mem[pc] % 1000;
+        printf("PC: %d, Instruction: %d, Opcode: %d, Reg: %d, Operand: %d\n", pc, mem[pc], opcode, reg, opnd);
+        switch (opcode) {
+            case 0:
+                printf("Termination\n");
+                return 0;
+            case 1:
+                if((reg1[reg] % 2) == 0) 
+                {
+                    reg1[reg] += mem[opnd]+1;
+                }
+                else
+                {
+                    reg1[reg] += mem[opnd];
+                }
+                break;
+                
+            case 3: 
+                reg1[reg] *= mem[opnd];
+                break;
+
+            case 4: 
+                reg1[reg] = mem[opnd];
+                break;
+
+            case 5: 
+                mem[opnd] = reg1[reg];
+                break;
+
+            case 6:
+                flag = (reg1[reg] <= mem[opnd]) ? 0 : 1;
+                break;
+
+            case 7: 
+                if (flag == 0) {
+                    pc = 2;
+                }                
+                break;
+
+            case 9: 
+                printf("\nEnter the number: \n");
+                scanf("%d", &mem[opnd]);
+                break;
+
+            case 10:                
+                printf("\nThe result is: %d\n",mem[opnd]);
+                return 0;
+            default:
+                printf("Invalid opcode: %d\n", opcode);
+                break;
+        }
+        pc++;
+    }
+    fclose(fp);
+    return 0;
+}
